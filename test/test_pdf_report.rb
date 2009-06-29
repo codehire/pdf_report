@@ -49,7 +49,7 @@ class PdfReportTest < ActiveSupport::TestCase
       end
       
       @chart = Report::Chart.new(:bar, collection) do |c|
-        #c.series("Domain") {|r| r[0]}
+        c.series("Domain") {|r| r[0]}
         c.series("Time Spent") {|r| r[1].split.first.to_i}
         c.series("Download") {|r| r[2].split.first.to_i}
       end

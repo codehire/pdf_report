@@ -8,7 +8,8 @@ module Report
       @collection = collection  
       @defaults = { 
         :border_style => :grid,
-        :border_width => 0.25
+        :border_width => 0.25,
+        :inset => 10.mm
          }
       yield self if block_given?
     end
@@ -26,7 +27,9 @@ module Report
     
     def generate(document)
       data = @column_names.map{|k| @columns[k]}.transpose
-      document.table data, defaults.merge(:headers => @column_names, :width => document.bounds.width)
+      document.pad(@defaults[:inset]) do
+        document.table data, defaults.merge(:headers => @column_names, :width => document.bounds.width)
+      end
     end
   end
 end

@@ -9,10 +9,12 @@ module Report
     end
     
     def generate(document)
-      document.text title
-      document.text description if description
-      chart.generate(document) if chart
-      table.generate(document) if table
+      document.pad(5.mm) do
+        document.text title
+        document.text description if description
+        chart.generate(document) if chart
+        table.generate(document) if table
+      end
      end
   end
 end
