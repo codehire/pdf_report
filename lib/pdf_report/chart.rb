@@ -3,10 +3,8 @@ module Report
     attr_accessor :dataset
     def initialize(chart_type, collection, &block)
       @names = []
-      @dataset = {}
-      
+      @dataset = {}    
       @collection = collection
-      @defaults = { :inset => 10.mm }
       yield self if block_given?
     end
     
@@ -22,7 +20,7 @@ module Report
       @dataset[name]
     end
     
-    def generate(document) 
+    def generate(document, chart_options={}) 
       names = @names.dup
       labels = dataset[names.shift]
 
@@ -38,7 +36,7 @@ module Report
       
       puts bc.to_escaped_url(:chco =>"4D89F9,C6D9FD")
 
-      inset = @defaults[:inset]
+      inset = chart_options[:inset]
       width = document.bounds.width - 2 * inset
       height = width / 4
             

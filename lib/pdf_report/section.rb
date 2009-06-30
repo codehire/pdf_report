@@ -1,5 +1,7 @@
 module Report
   class Section
+    include Report::Helper
+    
     attr_accessor :title, :description, :table, :chart
     
     def initialize(&block)
@@ -8,12 +10,16 @@ module Report
       yield self if block_given?
     end
     
-    def generate(document)
-      document.pad(5.mm) do
-        document.text title
-        document.text description if description
-        chart.generate(document) if chart
-        table.generate(document) if table
+    def generate(document, options = {})
+      document.pad(options[:padding]) do
+        text_with_font document, title, :font => options[:title_font], :size => options[:title_size]
+        if description
+          document.pad(options[:padding]) do
+            text_with_font document, description, :font => options[:body_font], :size => options[:body_size]
+          end
+        end
+        chart.generate(document, options[:chart_options] || {}) if chart
+        table.generate(document, options[:table_options] || {}) if table
       end
      end
   end

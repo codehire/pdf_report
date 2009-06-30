@@ -1,16 +1,11 @@
 module Report
   class Table
     attr_accessor :columns
-    attr_reader :defaults
+    
     def initialize(collection, &block)
       @column_names = []
       @columns = {}
       @collection = collection  
-      @defaults = { 
-        :border_style => :grid,
-        :border_width => 0.25,
-        :inset => 10.mm
-         }
       yield self if block_given?
     end
     
@@ -25,10 +20,11 @@ module Report
       @columns[name]
     end
     
-    def generate(document)
+    def generate(document, table_options={})
+      options = table_options.clone
       data = @column_names.map{|k| @columns[k]}.transpose
-      document.pad(@defaults[:inset]) do
-        document.table data, defaults.merge(:headers => @column_names, :width => document.bounds.width)
+      document.pad(options.delete(:padding)) do
+        document.table data, options.merge(:headers => @column_names, :width => document.bounds.width)
       end
     end
   end

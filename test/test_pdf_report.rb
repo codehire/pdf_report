@@ -59,7 +59,9 @@ class PdfReportTest < ActiveSupport::TestCase
     should "generate a PDF document" do
       @section.table = @table
       @section.chart = @chart
-      @pdf.sections << @section
+      3.times do 
+        @pdf.sections << @section
+    end
       @pdf.generate
     end
     
