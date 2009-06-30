@@ -22,7 +22,11 @@ module Report
           :padding => 10.mm
         },
         :chart_options => {
-          :inset => 10.mm 
+          :inset => 10.mm,
+          :size => '1000x300',
+          :bar_width => 'a',
+          :orientation => :horizontal,
+          :colours => '4D89F9,C6D9FD' 
         },
         :padding => 5.mm,
         :title_font => "Whitney",
@@ -40,15 +44,10 @@ module Report
       filename ||= options[:filename]
       Prawn::Document.generate(filename, options[:prawn_options]) do |document|
         document.font_families.update(Report::Fonts::Whitney)
-        #document.font(options[:title_font])
-        #document.text title, :size => options[:title_size]
-        
-        text_with_font document, title, :font => options[:title_font], :size => options[:title_size]
+        text_with_font(document, title, :font => options[:title_font], :size => options[:title_size])
         if description
           document.pad(options[:padding]) do
-            #document.font(options[:body_font])
-            #document.text description, :size => options[:body_size]
-            text_with_font document, title, :font => options[:body_font], :size => options[:body_size]
+            text_with_font(document, title, :font => options[:body_font], :size => options[:body_size])
           end
         end
         sections.each do |section|
