@@ -48,7 +48,7 @@ class PdfReportTest < ActiveSupport::TestCase
         t.column("Download") {|r| r[2]}
       end
       
-      @chart = Report::Chart.new(:bar, collection) do |c|
+      @chart = Report::Chart.new(:line, collection) do |c|
         c.series("Domain") {|r| r[0]}
         c.series("Time Spent") {|r| r[1].split.first.to_i}
         c.series("Download") {|r| r[2].split.first.to_i}
@@ -59,9 +59,7 @@ class PdfReportTest < ActiveSupport::TestCase
     should "generate a PDF document" do
       @section.table = @table
       @section.chart = @chart
-      3.times do 
-        @pdf.sections << @section
-    end
+      @pdf.sections << @section
       @pdf.generate
     end
     

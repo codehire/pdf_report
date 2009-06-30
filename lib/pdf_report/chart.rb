@@ -1,10 +1,12 @@
 module Report
   class Chart
     attr_accessor :dataset
-    def initialize(chart_type, collection, &block)
+    def initialize(chart_type, collection, orientation = 'horizontal', &block)
       @names = []
       @dataset = {}    
+      @chart_type = chart_type
       @collection = collection
+      @orientation = orientation.to_sym
       yield self if block_given?
     end
     
@@ -24,25 +26,32 @@ module Report
       names = @names.dup
       labels = dataset[names.shift]
 
-      bc = GoogleChart::BarChart.new("1000x300", nil, :horizontal, false)
-      bc.width_spacing_options(:bar_width=> 'a')
-      bc.axis(:y, :labels => labels)
-      bc.axis(:x)
+      case @chart_type
+      when :line
+        chart = GoogleChart::LineChart.new("1000x300")
+        chart.axis(:x, :labels => labels)
+        chart.axis(:y)
+      when :bar
+        chart = GoogleChart::BarChart.new("1000x300", nil, @orientation, false)
+        chart.width_spacing_options(:bar_width=> 'a')
+        chart.axis(:y, :labels => labels)
+        chart.axis(:x)
+      end
+      
+      
 
       
       names.each do |key|
-        bc.data key, dataset[key]
+        chart.data key, dataset[key]
       end
       
-      puts bc.to_escaped_url(:chco =>"4D89F9,C6D9FD")
-
       inset = chart_options[:inset]
       width = document.bounds.width - 2 * inset
       height = width / 4
             
       document.pad(inset) do 
         document.bounding_box([inset, document.cursor], :width => width, :height => height) do
-          document.image(open(bc.to_escaped_url(:chco =>'4D89F9,C6D9FD')), :width => width, :height => width/4)
+          document.image(open(chart.to_escaped_url(:chco =>'4D89F9,C6D9FD')), :width => width, :height => height)
         end
       end
     end
