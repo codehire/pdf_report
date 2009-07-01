@@ -57,7 +57,7 @@ module Report
           chart.axis(:y, :labels => labels)
           chart.axis(:x)
       end
-      
+          
       names.each do |key|
         chart.data key, dataset[key]
       end
@@ -69,7 +69,12 @@ module Report
             
       document.pad(inset) do 
         document.bounding_box([inset, document.cursor], :width => width, :height => height) do
-          document.image(open(chart.to_escaped_url(:chco => options[:colours])), :width => width, :height => height)
+          begin
+            chart_file = open(GoogleChart::Base::BASE_URL, :method => :post, :body => chart.escaped_post_params(:chco => options[:colours]))
+            document.image(chart_file, :width => width, :height => height)
+          rescue
+            document.text "ERROR: Could not create chart."
+          end
         end
       end
     end

@@ -32,6 +32,10 @@ class PdfReportTest < ActiveSupport::TestCase
         ["yahoo.com", "19 minutes", "11 MB"]
       ] 
       
+      1024.times do |n|
+        collection << [ "test #{n}", "#{n} minutes", "#{n} MB"]
+      end
+      
       @pdf = Report::PDF.new do |r|
         r.title = "Acme Corp: Internet Access Report"
         r.description = "Report Description"
@@ -48,7 +52,7 @@ class PdfReportTest < ActiveSupport::TestCase
         t.column("Download") {|r| r[2]}
       end
       
-      @chart = Report::Chart.new(:line, collection) do |c|
+      @chart = Report::Chart.new(:bar, collection) do |c|
         c.series("Domain") {|r| r[0]}
         c.series("Time Spent") {|r| r[1].split.first.to_i}
         c.series("Download") {|r| r[2].split.first.to_i}
