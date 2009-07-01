@@ -1,6 +1,17 @@
 module Report
   class Chart
+    
     attr_accessor :dataset, :options
+    
+    # Creates a new chart instance of the specified +chart_type+ [+:line+ | +:bar+] containing the records supplied in the +collection+ Array.
+    # Accepts an +options+ Hash, and an optional block to which the new Table instance will
+    # be yielded.
+    # The following options are recognised:
+    # <tt>:inset</tt>:: margin to apply to the chart image [10.mm]
+    # <tt>:size</tt>:: Chart size to be passed to Google Charts API ['1000x300']
+    # <tt>:bar_width</tt>:: Bar width to be passed to Google Charts API ['a']
+    # <tt>:orientation</tt>:: Orientation [:horizontal]
+    # <tt>:colours</tt>:: Colours to be passed to Google Charts API ['4D89F9,C6D9FD']
     def initialize(chart_type, collection, options = {}, &block)
       @names = []
       @dataset = {}    
@@ -10,11 +21,16 @@ module Report
       yield(self) if block_given?
     end
     
-
-    def series(name=nil, &block)
+    # Defines a Chart data series with a given +name+. The first series to be defined
+    # is assumed to be the label series.
+    # Supply a block to define how the series should be populated from the underlying
+    # +collection+ records. e.g:
+    #  c = Report::Chart.new(:bar)
+    #  c.series("download") { |rec| rec.download }
+    def series(name, &block)
+      @dataset[name] = []
+      @names << name
       if block_given?
-        @dataset[name] = []
-        @names << name
         @collection.each do |record|
           @dataset[name] << yield(record)
         end
@@ -22,6 +38,9 @@ module Report
       @dataset[name]
     end
     
+    # Renders the chart to the given 
+    # Prawn::Document[http://prawn.majesticseacreature.com/docs/prawn-core/classes/Prawn/Document.html] 
+    # instance, +document+. Accepts an optional hash of +chart_options+.
     def generate(document, chart_options={}) 
       options = chart_options.merge(options || {})
       names = @names.dup

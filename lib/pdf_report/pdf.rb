@@ -42,7 +42,7 @@ module Report
           :border_style => :grid,
           :border_width => 0.25,
           :font_size => 11,
-          :padding => 10.mm
+          :document_padding => 10.mm
         },
         :chart_options => {
           :inset => 10.mm,
@@ -75,7 +75,8 @@ module Report
     def generate(filename=nil)
       filename ||= options[:filename]
       Prawn::Document.generate(filename, options[:prawn_options]) do |document|
-        document.font_families.update(Report::Fonts::Whitney)
+        # Add support for additional fonts
+        document.font_families.update(Report::Fonts::AdditionalFonts)
         text_with_font(document, title, :font => options[:title_font], :size => options[:title_size])
         if description
           document.pad(options[:padding]) do
