@@ -37,7 +37,7 @@ module Report
         :filename =>"untitled.pdf"
         }
         @options = defaults.merge(opts)
-      yield self if block_given?
+      yield(self) if block_given?
     end
     
     def generate(filename=nil)

@@ -7,7 +7,7 @@ module Report
     def initialize(&block)
       @table = nil
       @chart = nil
-      yield self if block_given?
+      yield(self) if block_given?
     end
     
     def generate(document, options = {})

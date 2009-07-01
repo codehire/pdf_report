@@ -1,12 +1,13 @@
 module Report
   class Table
-    attr_accessor :columns
+    attr_accessor :columns, :options
     
-    def initialize(collection, &block)
+    def initialize(collection, options = {}, &block)
       @column_names = []
       @columns = {}
       @collection = collection  
-      yield self if block_given?
+      @options = options
+      yield(self) if block_given?
     end
     
     def column(name, &block)
@@ -21,7 +22,7 @@ module Report
     end
     
     def generate(document, table_options={})
-      options = table_options.clone
+      options = table_options.merge(options || {})
       data = @column_names.map{|k| @columns[k]}.transpose
       document.pad(options.delete(:padding)) do
         document.table data, options.merge(:headers => @column_names, :width => document.bounds.width)
