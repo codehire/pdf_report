@@ -22,12 +22,18 @@ module Report
     # +collection+ records. e.g:
     #  t = Report::PDF::Table.new
     #  t.column("date") { |rec| rec.created_at } 
-    def column(name, &block)
+    #  Alternatively, just provide the name of the column
+    #  t.column("date", :created_at)
+    def column(name, column_name = nil, &block)
       @columns[name] = []
         @column_names << name
       if block_given?
         @collection.each do |record|
-          @columns[name] << yield(record)
+          @columns[name] << if block_given?
+            yield(record)
+          else
+            record.send(:[], column_name)
+          end
         end
       end
       @columns[name]

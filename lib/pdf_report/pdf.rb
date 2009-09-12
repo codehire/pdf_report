@@ -70,11 +70,8 @@ module Report
       yield(self) if block_given?
     end
     
-    # Generates the PDF document. Passing +filename+ will override the filename specified
-    # in the options passed to PDF#new    
-    def generate(filename=nil)
-      filename ||= options[:filename]
-      Prawn::Document.generate(filename, options[:prawn_options]) do |document|
+    def generate(filename = nil)
+      prawn = Prawn::Document.new(options[:prawn_options]) do |document|
         # Add support for additional fonts
         document.font_families.update(Report::Fonts::AdditionalFonts)
         text_with_font(document, title, :font => options[:title_font], :size => options[:title_size])
@@ -87,8 +84,13 @@ module Report
           section.generate(document, options)
         end
       end
+      filename ? prawn.render_file(filename) : prawn.render
     end
-    
+
+    def section(title = nil, &block)
+      self.sections << Section.new(title, &block)
+    end
+
     class SectionArray < Array
       # Adds a new section to the array. Yields the newly created section instance to the block if one is passed.
       def add(&block)

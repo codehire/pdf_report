@@ -2,7 +2,7 @@
 require 'prawn'
 require 'prawn/layout'
 require 'prawn/measurement_extensions'
-require 'google_chart'
+require 'gchart'
 require 'google_chart/base'
 require 'rest-open-uri'
 

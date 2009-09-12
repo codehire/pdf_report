@@ -2,13 +2,20 @@ module Report
   class Section
     include Report::Helper
     
-    attr_accessor :title, :description, :table, :chart
+    attr_accessor :title, :description, :chart
+    attr_reader :table
     
     # Creates a new section, which is yielded to the block if supplied.
-    def initialize(&block)
+    def initialize(title = nil, &block)
+      @title = title
       @table = nil
       @chart = nil
       yield(self) if block_given?
+    end
+
+    def table(collection, options = {})
+      @table = Table.new(collection, options)
+      yield @table if block_given?
     end
     
     # Renders the section to the given 
@@ -23,7 +30,7 @@ module Report
           end
         end
         chart.generate(document, options[:chart_options] || {}) if chart
-        table.generate(document, options[:table_options] || {}) if table
+        @table.generate(document, options[:table_options] || {}) if @table
       end
      end
   end
