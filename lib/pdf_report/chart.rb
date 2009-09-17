@@ -70,7 +70,7 @@ module Report
       document.pad(inset) do 
         document.bounding_box([inset, document.cursor], :width => width, :height => height) do
           begin
-            chart_file = open(GoogleChart::Base::BASE_URL, :method => :post, :body => chart.escaped_post_params(:chco => options[:colours]))
+            chart_file = open(chart.to_escaped_url(:chco => options[:colours]))
             document.image(chart_file, :width => width, :height => height)
           rescue
             document.text "ERROR: Could not create chart."

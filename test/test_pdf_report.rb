@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'pdf_report'
+require 'yaml'
 class PdfReportTest < ActiveSupport::TestCase  
   should "create a new report" do
     pdf = Report::PDF.new
@@ -23,18 +24,7 @@ class PdfReportTest < ActiveSupport::TestCase
   
   context "A Report::PDF instance" do
     setup do
-      
-      collection = [
-        ["google.com", "88 minutes", "45 MB"],
-        ["facebook.com", "90 minutes", "35 MB"],
-        ["netfox.com", "37 minutes", "30 MB"],
-        ["news.com.au", "27 minutes", "29 MB"],
-        ["yahoo.com", "19 minutes", "11 MB"]
-      ] 
-      
-      1024.times do |n|
-        collection << [ "test #{n}", "#{n} minutes", "#{n} MB"]
-      end
+      collection = YAML.load_file("test/data.yaml")
       
       @pdf = Report::PDF.new do |r|
         r.title = "Acme Corp: Internet Access Report"
@@ -45,46 +35,39 @@ class PdfReportTest < ActiveSupport::TestCase
         s.title = "Top Domains"
         s.description = "Top domains accessed between 2009/05/04 and 2009/05/06"
       end
-      
-      @table = Report::Table.new(collection) do |t|
-        t.column("Domain") {|r| r[0]}
-        t.column("Time Spent") {|r| r[1]}
-        t.column("Download") {|r| r[2]}
+
+      @section.table(collection) do |t|
+        t.column("Domain") { |r| r[:domain] }
+        t.column("Download") do |row| 
+          row[:download]
+        end
       end
-      
-      @chart = Report::Chart.new(:bar, collection) do |c|
-        c.series("Domain") {|r| r[0]}
-        c.series("Time Spent") {|r| r[1].split.first.to_i}
-        c.series("Download") {|r| r[2].split.first.to_i}
+      @section.chart = Report::Chart.new(:bar, collection) do |c|
+        c.series("Domain") { |r| r[:domain] }
+        c.series("Download") { |r| r[:download].to_i }
       end
-      
     end
     
-    should "generate a PDF document" do
-      @section.table = @table
-      @section.chart = @chart
+    should "generate a PDF document" do      
       @pdf.sections << @section
-      @pdf.generate
+      @pdf.generate('data.pdf')
     end
     
     should "be able to add a section to the pdf with a block" do
       title = "Top Domains"
       description = "Top domains accessed on ..."
-      table = mock()
       chart = mock()
       
       assert_equal @pdf.sections.size, 0
       @pdf.sections.add do |section|
         section.title = title
         section.description = description
-        section.table = table
         section.chart = chart
       end
       
       assert_equal @pdf.sections.size, 1
       assert_equal @pdf.sections[0].title, title
       assert_equal @pdf.sections[0].description, description
-      assert_equal @pdf.sections[0].table, table
       assert_equal @pdf.sections[0].chart, chart
     end
     
