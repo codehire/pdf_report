@@ -73,6 +73,8 @@ module Report
             chart_file = open(chart.to_escaped_url(:chco => options[:colours]))
             document.image(chart_file, :width => width, :height => height)
           rescue
+            puts $!
+            puts $!.backtrace
             document.text "ERROR: Could not create chart."
           end
         end
