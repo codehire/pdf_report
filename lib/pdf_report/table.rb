@@ -26,7 +26,7 @@ module Report
     #  t.column("date", :created_at)
     def column(name, column_name = nil, &block)
       @columns[name] = []
-        @column_names << name
+      @column_names << name
       if block_given?
         @collection.each do |record|
           @columns[name] << if block_given?
@@ -45,8 +45,12 @@ module Report
     def generate(document, table_options={})
       options = table_options.merge(options || {})
       data = @column_names.map{|k| @columns[k]}.transpose
-      document.pad(options.delete(:document_padding)) do
-        document.table data, options.merge(:headers => @column_names, :width => document.bounds.width)
+      unless data.empty?
+        document.pad(options.delete(:document_padding)) do
+          document.table data, options.merge(:headers => @column_names, :width => document.bounds.width)
+        end
+      else
+        document.text_box "No Data", :overflow => :expand
       end
     end
   end
