@@ -1,6 +1,7 @@
 require 'test_helper'
 require 'pdf_report'
 require 'yaml'
+
 class PdfReportTest < ActiveSupport::TestCase  
   should "create a new report" do
     pdf = Report::PDF.new
@@ -80,6 +81,42 @@ class PdfReportTest < ActiveSupport::TestCase
     end
   end
   
+  context "Without any data" do
+    setup do
+      @pdf = Report::PDF.new do |n|
+        n.title = "Foo"
+        n.description = "Bar"
+      end
+      @collection = []
+      @section = Report::Section.new do |s|
+        s.title = "Baz"
+        s.description = "Quux"
+      end
+    end
+    should "not die a horrible death" do
+      @pdf.generate('empty.pdf')
+    end
+    
+    should "not die when given an empty collection" do
+      
+      @section.table(@collection) do |table|
+        table.column("foo") { |rec| rec.foo}
+        table.column("bar") { |rec| rec.bar}
+        table.column("baz") { |rec| rec.baz}
+      end
+      
+      @section.chart = Report::Chart.new(:line, @collection) do |chart|
+        chart.series("foo") { |rec| rec.foo}
+        chart.series("bar") { |rec| rec.bar}
+        chart.series("baz") { |rec| rec.baz}
+      end
+      
+      @pdf.sections << @section
+      @pdf.generate('empty.pdf')
+    end
+      
+  end
+  
   context "With a collection of records it" do
     setup do
       @record = mock()
@@ -102,13 +139,13 @@ class PdfReportTest < ActiveSupport::TestCase
     
     should "create a new chart given a block" do
     
-      table = Report::Chart.new(:lc, @collection) do |chart|
+      chart = Report::Chart.new(:line, @collection) do |chart|
         chart.series("foo") { |rec| rec.foo}
         chart.series("bar") { |rec| rec.bar}
         chart.series("baz") { |rec| rec.baz}
       end
       
-      assert_equal table.dataset.size, 3
+      assert_equal chart.dataset.size, 3
     end
   end
 end

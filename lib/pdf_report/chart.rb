@@ -1,5 +1,6 @@
 module Report
   class Chart
+    class UnknownChartError < Exception; end
     
     attr_accessor :dataset, :options
     
@@ -47,15 +48,17 @@ module Report
       labels = dataset[names.shift]
 
       case @chart_type
-        when :line
+        when :line,:lc
           chart = GoogleChart::LineChart.new(options[:size])
           chart.axis(:x, :labels => labels)
           chart.axis(:y)
-        when :bar
+        when :bar,:bc
           chart = GoogleChart::BarChart.new(options[:size], nil, options[:orientation], false)
           chart.width_spacing_options(:bar_width => options[:bar_width])
           chart.axis(:y, :labels => labels)
           chart.axis(:x)
+        else
+          raise UnknownChartError.new("Unknown chart type. Valid choices are :bar, :bc, :line, :lc")
       end
           
       names.each do |key|
