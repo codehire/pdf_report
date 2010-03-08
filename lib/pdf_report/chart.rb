@@ -39,6 +39,8 @@ module Report
       @dataset[name]
     end
     
+    # TODO: Take format options
+    # TODO: Build method for labels and set max number of labels
     # Renders the chart to the given 
     # Prawn::Document[http://prawn.majesticseacreature.com/docs/prawn-core/classes/Prawn/Document.html] 
     # instance, +document+. Accepts an optional hash of +chart_options+.
@@ -49,9 +51,21 @@ module Report
 
       case @chart_type
         when :line,:lc
-          chart = GoogleChart::LineChart.new(options[:size])
-          chart.axis(:x, :labels => labels)
-          chart.axis(:y)
+          chart = GoogleChart::LineChart.new(options[:size]) do |lc|
+            puts "labels = #{labels.inspect}"
+            mylabels = []
+            labels.each_with_index do |l,i|
+              mylabels << (((i % 4) > 0) ? '' : l)
+            end
+            mylabels.map! do |label|
+              String === label ? label : label.strftime("%d %b, %I%p")
+            end
+            puts "mlabels = #{mylabels.inspect}"
+            lc.show_legend = false
+            lc.line_style 0, :line_thickness => 3
+            lc.axis(:x, :labels => mylabels, :font_size => 18, :color => '333333', :alignment => :center)
+            lc.axis(:y, :font_size => 18, :color => '333333', :alignment => :right)
+          end
         when :bar,:bc
           chart = GoogleChart::BarChart.new(options[:size], nil, options[:orientation], false)
           chart.width_spacing_options(:bar_width => options[:bar_width])
