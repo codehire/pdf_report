@@ -10,6 +10,7 @@ module Report
     # Also recognises:
     # <tt>:document_padding</tt>:: Vertical padding before and after table.
     def initialize(collection, options = {}, &block)
+      puts "INITIALIZING TABLE with options = #{options.inspect}"
       @column_names = []
       @columns = {}
       @collection = collection  
@@ -43,7 +44,7 @@ module Report
     # Prawn::Document[http://prawn.majesticseacreature.com/docs/prawn-core/classes/Prawn/Document.html] 
     # instance, +document+. Accepts an optional hash of +table_options+.
     def generate(document, table_options={})
-      options = table_options.merge(options || {})
+      options = (@options || {}).merge(table_options)
       data = @column_names.map{|k| @columns[k]}.transpose
       unless data.empty?
         document.pad(options.delete(:document_padding)) do

@@ -42,7 +42,11 @@ module Report
           :border_style => :grid,
           :border_width => 0.25,
           :font_size => 11,
-          :document_padding => 10.mm
+          :document_padding => 10.mm,
+          :header_color => "f6f6f6",
+          :header_text_color => "0d57a3",
+          :border_color => "dfdfdf",
+          :row_colors => %w(fafafa ffffff)
         },
         :chart_options => {
           :inset => 10.mm,
@@ -68,6 +72,10 @@ module Report
           end
         end
       yield(self) if block_given?
+    end
+
+    def page_break
+      self.sections << PageBreak.new
     end
     
     def generate(filename = nil)
