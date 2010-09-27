@@ -36,7 +36,7 @@ module Report
           :left_margin => 20.mm, 
           :right_margin =>20.mm,
           :top_margin => 25.mm,
-          :bottom_margin => 20.mm 
+          :bottom_margin => 20.mm
         },
         :table_options => {
           :border_style => :grid,
@@ -50,7 +50,7 @@ module Report
         },
         :chart_options => {
           :inset => 10.mm,
-          :size => '1000x300',
+          :size => '750x375',
           :bar_width => 'a',
           :orientation => :horizontal,
           :colours => '4D89F9,C6D9FD' 

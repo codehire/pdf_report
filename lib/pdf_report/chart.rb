@@ -45,7 +45,7 @@ module Report
     # Prawn::Document[http://prawn.majesticseacreature.com/docs/prawn-core/classes/Prawn/Document.html] 
     # instance, +document+. Accepts an optional hash of +chart_options+.
     def generate(document, chart_options={}) 
-      options = chart_options.merge(options || {})
+      options = chart_options.merge(@options || {})
       names = @names.dup
       labels = dataset[names.shift]
 
@@ -55,16 +55,17 @@ module Report
             puts "labels = #{labels.inspect}"
             mylabels = []
             labels.each_with_index do |l,i|
-              mylabels << (((i % 4) > 0) ? '' : l)
+              mylabels << (((i % 16) > 0) ? '' : l)
             end
+            # TODO: Format these labels according to the range
             mylabels.map! do |label|
               String === label ? label : label.strftime("%d %b, %I%p")
             end
             puts "mlabels = #{mylabels.inspect}"
-            lc.show_legend = false
+            lc.show_legend = true
             lc.line_style 0, :line_thickness => 3
-            lc.axis(:x, :labels => mylabels, :font_size => 18, :color => '333333', :alignment => :center)
-            lc.axis(:y, :font_size => 18, :color => '333333', :alignment => :right)
+            lc.axis(:x, :labels => mylabels, :font_size => 11, :color => '333333', :alignment => :center)
+            lc.axis(:y, :font_size => 11, :color => '333333', :alignment => :right)
           end
         when :bar,:bc
           chart = GoogleChart::BarChart.new(options[:size], nil, options[:orientation], false)
@@ -82,13 +83,18 @@ module Report
       inset = options[:inset]
       # Dimensions for inset bounding box and the image within it
       width = document.bounds.width - 2 * inset
-      height = width / 4
+      height = width / 2
             
       document.pad(inset) do 
         document.bounding_box([inset, document.cursor], :width => width, :height => height) do
           begin
-            chart_file = open(chart.to_escaped_url(:chco => options[:colours]))
-            document.image(chart_file, :width => width, :height => height)
+            # TODO: Move to gchart extension
+            res = Net::HTTP.post_form(
+              URI.parse(GoogleChart::Base::BASE_URL),
+              chart.escaped_post_params(:chco => options[:colours], :chdlp => 'b')
+            )
+            # TODO: Check for errors
+            document.image(StringIO.new(res.body), :width => width, :height => height)
           rescue
             puts $!
             puts $!.backtrace
