@@ -52,20 +52,24 @@ module Report
       case @chart_type
         when :line,:lc
           chart = GoogleChart::LineChart.new(options[:size]) do |lc|
-            puts "labels = #{labels.inspect}"
             mylabels = []
+            # We want no more than 6 labels for this chart
+            choose_every = (labels.size / 6.0).ceil
             labels.each_with_index do |l,i|
-              mylabels << (((i % 16) > 0) ? '' : l)
+              mylabels << (((i % choose_every) > 0) ? '' : l)
             end
             # TODO: Format these labels according to the range
             mylabels.map! do |label|
               String === label ? label : label.strftime("%d %b, %I%p")
             end
-            puts "mlabels = #{mylabels.inspect}"
+            max_y = 1500
+            #max_y = 
+            p @dataset
+              p @dataset.values.map(&:max)
             lc.show_legend = true
             lc.line_style 0, :line_thickness => 3
             lc.axis(:x, :labels => mylabels, :font_size => 11, :color => '333333', :alignment => :center)
-            lc.axis(:y, :font_size => 11, :color => '333333', :alignment => :right)
+            lc.axis(:y, :range => [ 0, max_y ], :font_size => 11, :color => '333333', :alignment => :right)
           end
         when :bar,:bc
           chart = GoogleChart::BarChart.new(options[:size], nil, options[:orientation], false)
@@ -93,6 +97,7 @@ module Report
               URI.parse(GoogleChart::Base::BASE_URL),
               chart.escaped_post_params(:chco => options[:colours], :chdlp => 'b')
             )
+            p chart.escaped_post_params(:chco => options[:colours], :chdlp => 'b')
             # TODO: Check for errors
             document.image(StringIO.new(res.body), :width => width, :height => height)
           rescue
