@@ -26,9 +26,10 @@ module Report
         text_with_font document, title, :font => options[:title_font], :size => options[:title_size]
         if description
           document.pad(options[:padding]) do
-            text_with_font document, description, :font => options[:body_font], :size => options[:body_size]
+            text_with_font document, description, :font => options[:body_font], :size => options[:body_size], :style => :italic
           end
         end
+        document.font(options[:body_font], :size => options[:body_size], :style => :normal)
         chart.generate(document, options[:chart_options] || {}) if chart
         @table.generate(document, options[:table_options] || {}) if @table
       end

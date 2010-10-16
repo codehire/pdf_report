@@ -9,9 +9,9 @@ module Report
     AdditionalFonts = {
       "Whitney" => {
         :bold =>        File.join(Whitney_Path, 'WHITNSEM.TTF'),
-        :italic =>      File.join(Whitney_Path, 'WHITNMIT.TTF'),
+        :italic =>      File.join(Whitney_Path, 'WHITNLIT.ttf'),
         :bold_italic => File.join(Whitney_Path, 'WHITNDIT.TTF'),
-        :normal =>      File.join(Whitney_Path, 'WHITNMED.ttf')
+        :normal =>      File.join(Whitney_Path, 'WHITNBOK.ttf')
       }
     }
   end

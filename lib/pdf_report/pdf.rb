@@ -35,14 +35,15 @@ module Report
           :page_layout => :portrait, 
           :left_margin => 20.mm, 
           :right_margin =>20.mm,
-          :top_margin => 25.mm,
+          :top_margin => 20.mm,
           :bottom_margin => 20.mm
         },
         :table_options => {
           :border_style => :grid,
           :border_width => 0.25,
-          :font_size => 11,
-          :document_padding => 10.mm,
+          :font_size => 9,
+          :style => :normal,
+          :document_padding => 2.mm,
           :header_color => "f6f6f6",
           :header_text_color => "0d57a3",
           :border_color => "dfdfdf",
@@ -57,9 +58,9 @@ module Report
         },
         :padding => 5.mm,
         :title_font => "Whitney",
-        :title_size => 22,        
-        :body_font => "Helvetica",
-        :body_size => 12,
+        :title_size => 16, 
+        :body_font => "Whitney",
+        :body_size => 10,
         :filename =>"untitled.pdf"
         }
 

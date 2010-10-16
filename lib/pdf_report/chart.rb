@@ -63,9 +63,6 @@ module Report
               String === label ? label : label.strftime("%d %b, %I%p")
             end
             max_y = 1500
-            #max_y = 
-            p @dataset
-              p @dataset.values.map(&:max)
             lc.show_legend = true
             lc.line_style 0, :line_thickness => 3
             lc.axis(:x, :labels => mylabels, :font_size => 11, :color => '333333', :alignment => :center)
@@ -89,7 +86,7 @@ module Report
       width = document.bounds.width - 2 * inset
       height = width / 2
             
-      document.pad(inset) do 
+      document.pad(inset + 15) do 
         document.bounding_box([inset, document.cursor], :width => width, :height => height) do
           begin
             # TODO: Move to gchart extension
